@@ -69,7 +69,7 @@ const ChatPanel = ({ cyInstance, sendRef, width }) => {
     }
 
     try {
-      const res = await axios.get(`${API_BASE}/query?q=${encodeURIComponent(text)}`);
+      const res = await axios.post(`${API_BASE}/query`, { query: text });
       const data = res.data;
       
       // Update Graph

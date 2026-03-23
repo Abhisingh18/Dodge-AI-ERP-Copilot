@@ -406,6 +406,9 @@ def run_sql(sql: str):
         print(f"❌ FAILED SQL: {sql}")
         return [{"error": str(e)}]
 
+class QueryRequest(BaseModel):
+    query: str
+
 class QueryResponse(BaseModel):
     query: str
     sql: str
@@ -415,8 +418,9 @@ class QueryResponse(BaseModel):
     type: str
     intent: str
 
-@app.get("/query", response_model=QueryResponse)
-async def process_query(q: str):
+@app.post("/query", response_model=QueryResponse)
+async def process_query(req: QueryRequest):
+    q = req.query
     # Guardrail: out-of-scope queries
     if any(x in q.lower() for x in ["weather", "poem", "who is", "joke"]):
         return QueryResponse(
