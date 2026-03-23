@@ -45,3 +45,4 @@
   - [x] Commit all changes locally (Monorepo + Updates)
   - [x] Final Push to GitHub (Success 🚀)
   - [x] Fix Vercel 404: Add `frontend/vercel.json` and push
+  - [x] Fix API 422: Refactor `/query` from GET to POST

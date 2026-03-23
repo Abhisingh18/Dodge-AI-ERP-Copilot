@@ -14,6 +14,7 @@
 | **Environment Vars** | **NEW**: VITE_API_URL support | Local/Production API switching ready |
 | **GitHub Repo** | **DONE**: Pushed to [Dodge-AI-ERP-Copilot](https://github.com/Abhisingh18/Dodge-AI-ERP-Copilot) | Full Monorepo live 🚀 |
 | **Vercel Fix** | **DONE**: Added `vercel.json` | 404 Routing issue resolved |
+| **API Protocol** | **DONE**: Switched to `POST /query` | Resolved "Field required" (422) error |
 | **Node Details Popup** | `GET /node-details/{id}` — live DB metadata | Popup with real values & Explain/Explore buttons |
 | **Fraud Detection** | `GET /fraud-check` — 4 core anomaly rules | 🚨 Red badge + flagged issues list |
 
