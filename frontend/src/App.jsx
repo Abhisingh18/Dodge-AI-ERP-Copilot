@@ -12,8 +12,7 @@ function App() {
   const chatSendRef = useRef(null);
 
   // Backend API URL (Local)
-  // Backend API URL (Dynamic for Vercel/Render)
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+  const API_BASE = '/api';
 
   useEffect(() => {
      fetch(API_BASE + '/stats')

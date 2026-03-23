@@ -27,7 +27,7 @@ const demoData = {
 };
 
 // Backend API URL (Dynamic for Vercel/Render)
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API_BASE = '/api';
 
 const GraphPanel = ({ setCyInstance, onExplainNode }) => {
   const containerRef = useRef(null);
