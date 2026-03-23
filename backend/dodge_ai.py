@@ -178,16 +178,19 @@ def detect_intent(query: str) -> dict:
         print(f"❌ Intent detection failed: {e}")
         # Fallback: simple keyword detection
         q = query.lower()
-        if "trace" in q or "flow" in q:
+        if "explain" in q or "trace" in q or "flow" in q:
             import re
             match = re.search(r'\d+', q)
             doc_id = match.group(0) if match else None
             entities = {}
             if doc_id:
-                entities["order_id"] = doc_id
-            return {"intent": "trace_order", "entities": entities}
+                # Basic heuristic: if it starts with 7, it's an order; 8 is delivery; 9 is billing/payment
+                if doc_id.startswith('7'): entities["order_id"] = doc_id
+                elif doc_id.startswith('8'): entities["delivery_id"] = doc_id
+                elif doc_id.startswith('91'): entities["billing_id"] = doc_id
+                else: entities["billing_id"] = doc_id # Default to billing/ID lookup
+            return {"intent": "trace_order" if "trace" in q or "flow" in q else "explain", "entities": entities}
         if "fraud" in q or "anomal" in q: return {"intent": "fraud_check", "entities": {}}
-        if "explain" in q: return {"intent": "explain", "entities": {}}
         if "top" in q or "highest" in q: return {"intent": "top_billed", "entities": {}}
         if "incomplete" in q or "not billed" in q: return {"intent": "orders_without_invoice", "entities": {}}
         if "journal" in q: return {"intent": "show_journals", "entities": {}}
@@ -406,6 +409,14 @@ def run_sql(sql: str):
         print(f"❌ FAILED SQL: {sql}")
         return [{"error": str(e)}]
 
+def clean_data(data):
+    """Replace NaN/NaT with None/null for JSON serialization."""
+    if isinstance(data, list):
+        return [clean_data(i) for i in data]
+    if isinstance(data, dict):
+        return {k: (None if pd.isna(v) else v) for k, v in data.items()}
+    return data
+
 class QueryRequest(BaseModel):
     query: str
 
@@ -480,7 +491,7 @@ async def process_query(req: QueryRequest):
     return QueryResponse(
         query=q,
         sql=sql,
-        result=resp_obj.get("data", []),
+        result=clean_data(resp_obj.get("data", [])),
         highlights=highlights,
         answer=resp_obj.get("answer", "Processing completed."),
         type=resp_type,
@@ -543,11 +554,48 @@ def node_details(node_id: str):
         clean_id = node_id.replace('prod_', '')
         df = pd.read_sql_query(f"SELECT * FROM products WHERE product='{clean_id}'", conn)
         if len(df) > 0:
-            return {"type": "Product", "data": df.iloc[0].to_dict()}
+            return {"type": "Product", "data": clean_data(df.iloc[0].to_dict())}
 
         return {"type": "unknown", "data": {"id": node_id, "message": "Node not found in any table."}}
     except Exception as e:
         return {"type": "error", "data": {"error": str(e)}}
+
+@app.get("/node-explanation/{node_id}")
+def node_explanation(node_id: str):
+    """Generate a dynamic business explanation for a specific node's context."""
+    try:
+        sql = _build_trace_sql(node_id)
+        df = pd.read_sql_query(sql, conn)
+        if df.empty:
+            return {"explanation": f"Node **{node_id}** exists but has no linked transaction flow."}
+        
+        row = clean_data(df.iloc[0].to_dict())
+        so = row.get('salesOrder')
+        dl = row.get('deliveryDocument')
+        bl = row.get('billingDocument')
+        je = row.get('journalEntry')
+        py = row.get('paymentDoc')
+        
+        parts = []
+        if so: parts.append(f"Sales Order **{so}**")
+        if dl: parts.append(f"Delivery **{dl}**")
+        if bl: parts.append(f"Billing **{bl}**")
+        if je: parts.append(f"Journal **{je}**")
+        if py: parts.append(f"Payment **{py}**")
+        
+        explanation = f"This transaction started with {parts[0] if parts else 'this document'} and progressed through: {' → '.join(parts[1:])}."
+        if not bl: explanation += " ⚠️ **Status**: Pending Billing."
+        elif not je: explanation += " ⚠️ **Status**: Pending Accounting Post."
+        elif not py: explanation += " ⚠️ **Status**: Pending Payment."
+        else: explanation += " ✅ **Status**: Fully Cleared."
+        
+        return {
+            "node_id": node_id,
+            "explanation": explanation,
+            "flow": row
+        }
+    except Exception as e:
+        return {"explanation": f"Could not generate explanation: {e}"}
 
 # ==============================
 # FRAUD CHECK API

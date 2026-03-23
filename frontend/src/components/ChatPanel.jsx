@@ -172,7 +172,7 @@ const ChatPanel = ({ cyInstance, sendRef, width }) => {
       { id: r.billingDocument, label: 'Billing', icon: '📄', color: '#f59e0b' },
       { id: r.journalEntry, label: 'Journal', icon: '📒', color: '#8b5cf6' },
       { id: r.paymentDoc, label: 'Payment', icon: '💰', color: '#f87171' }
-    ].filter(s => s.id);
+    ].filter(s => s.id && s.id !== 'nan' && String(s.id).toLowerCase() !== 'null');
 
     return (
       <div className="mt-4 flex flex-col gap-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-3.5 shadow-sm">
