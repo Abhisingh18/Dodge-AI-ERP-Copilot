@@ -1,34 +1,37 @@
-# Dodge AI - ERP Intelligence Copilot 🚀
+# 🚀 Dodge AI: SAP Order-to-Cash Explorer
 
-An AI-powered ERP Data Assistant that transforms natural language queries into real-time insights, visual flow traces, and interactive graph visualizations.
-
-## ✨ Key Features
-- **AI Intent Detection**: Classifies ERP queries (Trace, Aggregation, Fraud, etc.) using LLMs.
-- **Visual Transaction Stream**: Displays the full P2P chain (Order → Delivery → Billing → Journal → Payment) with interactive icons.
-- **Dynamic Graph Visualization**: Interactive Cytoscape graph with node highlighting and live metadata popups.
-- **Smart Analytics**: Automated chart generation (Bar, Line, Pie) via Recharts.
-- **Monorepo Architecture**: Clean separation between FastAPI backend and React (Vite) frontend.
+Dodge AI is a powerful, visual ERP analytics tool designed to trace and analyze the **Order-to-Cash (O2C)** process. It features a dynamic Cytoscape-powered graph and an AI Agent that provides deep business context for every transaction.
 
 ## 📁 Repository Structure
+
+- **`/frontend`**: React + Vite application (contains the UI, Graph, and AI Chat).
+- **`/backend`**: FastAPI backend (Logic, Database Queries, and AI Intent Handling).
+- **`/sessions`**: Complete history of development, walkthroughs, and verification media.
+- **`/DOCS`**: Master deployment guides and technical documentation.
+
+## 🛠️ Setup Instructions
+
+### 1. Local Development
+#### Backend:
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn dodge_ai:app --host 0.0.0.0 --port 8000 --reload
 ```
-dodge-ai/
- ├── backend/            # FastAPI + SQLite + LLM Logic
- ├── frontend/           # React + Cytoscape + Tailwind
- ├── archive/            # Legacy prototype files
- └── DOCS/               # Walkthroughs and Deployment Guides
+#### Frontend:
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-## 🚀 Quick Start
-For full deployment instructions, see [DOCS/deployment_guide.md](./DOCS/deployment_guide.md).
+### 2. Production Deployment
+- **Backend**: Deploy on **Render.com** (Root: `backend`, Command: `uvicorn dodge_ai:app --host 0.0.0.0 --port $PORT`).
+- **Frontend**: Deploy on **Vercel** (Root: `frontend`, Framework: `Vite`).
+- **Zero-Config**: The provided `vercel.json` automatically proxies API calls to Render.
 
-### Local Setup
-1. **Backend**: `cd backend && uvicorn dodge_ai:app --reload`
-2. **Frontend**: `cd frontend && npm run dev`
-
-## 🛠 Tech Stack
-- **Frontend**: React, Vite, Cytoscape.js, Recharts, Lucide Icons, Tailwind CSS.
-- **Backend**: FastAPI, SQLite, Pandas, OpenRouter (OpenAI API).
-- **Deployment**: Render (Backend), Vercel (Frontend).
+## 🔗 Public Repository Link
+[https://github.com/Abhisingh18/Dodge-AI-ERP-Copilot](https://github.com/Abhisingh18/Dodge-AI-ERP-Copilot)
 
 ---
-Developed with 💀 by Antigravity
+Developed with 🔥 by **Dodge AI** for high-speed ERP intelligence.
