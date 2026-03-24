@@ -34,4 +34,4 @@ npm run dev
 [https://github.com/Abhisingh18/Dodge-AI-ERP-Copilot](https://github.com/Abhisingh18/Dodge-AI-ERP-Copilot)
 
 ---
-Developed with 🔥 by **Dodge AI** for high-speed ERP intelligence.
+Developed For **Dodge AI** for high-speed ERP intelligence.
